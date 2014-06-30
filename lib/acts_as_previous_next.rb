@@ -5,7 +5,7 @@ module ActsAsPreviousNext
 
   included do
     def self.acts_as_previous_next(options = {})
-      configuration = { column: 'id', with_cancan: false }
+      configuration = { column: 'id', with_cancan: false,condition_columns: nil }
       configuration.update(options) if options.is_a?(Hash)
 
       if options.is_a? Symbol
@@ -40,6 +40,7 @@ module ActsAsPreviousNext
           end
         end
         def compose_condition
+          return "" if condition_columns.blank?
           return "#{condition_columns}=#{self.send(condition_columns)}" if condition_columns.is_a? String
           return (condition_columns.map{|c|"#{c}=#{self.send(c)}"}).join(" and ") if condition_columns.is_a? Array           
         end

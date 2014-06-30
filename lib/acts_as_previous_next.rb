@@ -13,6 +13,7 @@ module ActsAsPreviousNext
         with_cancan = false
       elsif options.is_a? Hash
         column      = options[:column] || "id"
+        condition_columns = options[:condtion_columns]
         with_cancan = options[:with_cancan]
       end
 
@@ -37,6 +38,10 @@ module ActsAsPreviousNext
             self.class.where("#{column} < ?", self.send('#{column}')).order("#{column} DESC").first ||
             self.class.order("#{column} DESC").first
           end
+        end
+        def compose_condition
+          return "#{condition_columns}=#{self.send(condition_columns)}" if condtion_columns.is_a? String
+          return (condtion_columns.map{|c|"#{c}=#{self.send(c)}"}).join(" and ") if condtion_columns.is_a? Array           
         end
       EOF
     end
